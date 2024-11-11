@@ -1,7 +1,7 @@
 ###############################
 # Circumference Over Diameter #
 # A Pi calculator             #
-# Version: 1.0.0              #
+# Version: 1.0.1              #
 # Copyright (c) 2024 Te Du    #
 # Licensed under Te's License #
 ###############################
@@ -35,11 +35,11 @@ def binary_split(a: mpz, b: mpz) -> tuple[mpz, mpz, mpz]:
 
 # configure print() to always forcibly flush and remove newline
 orig_print = print
-def print(string: str):
+def print(string: str) -> None:
     orig_print(string, end = "", file = print_stream, flush = True)
 
 # define letter-by-letter printing function
-def print_letter_by_letter(string: str, delay_second: bool = True):
+def print_letter_by_letter(string: str, delay_second: bool = True) -> None:
     for i in range(len(string)):
         print(string[i])
         sleep(0.03)
@@ -52,7 +52,7 @@ error = "\n"
 print_stream = stdout
 
 # print title
-print_letter_by_letter("Circumference Over Diameter\n\nA Pi calculator\n\nVersion: 1.0.0\n\nCopyright (c) 2024 Te Du\n\nLicensed under Te's License\n\n")
+print_letter_by_letter("Circumference Over Diameter\n\nA Pi calculator\n\nVersion: 1.0.1\n\nCopyright (c) 2024 Te Du\n\nLicensed under Te's License\n\n")
 
 # safeguard against errors
 try:
@@ -72,8 +72,10 @@ try:
     # if storage method is disk
     if storage_choice == "b":
         from datetime import datetime
-        output_file = open(str(datetime.now()).replace(":", ".") + " - Pi.txt", "w")
+        output_file_path = str(datetime.now()).replace(":", ".") + " - Pi.txt"
+        output_file = open(output_file_path, "w")
         print_stream = output_file
+        print("Circumference Over Diameter Pi file\n")
     
     # if value is invalid, raise ValueError
     elif storage_choice != "a":
@@ -94,7 +96,7 @@ try:
     get_context().precision = int((digits + 4) * 3.33) + 1
 
     # perform final calculations and add to result
-    result += str((root(10005, 2) * Qab * 426880) / (Qab * mpz(13591409) + Rab))[:digits + 2] + "\n\n"
+    result += str((root(10005, 2) * Qab * 426880) / (Qab * mpz(13591409) + Rab))[:digits + 2] + "\n"
 
     # end calculation timer
     end_time = time()
@@ -124,20 +126,23 @@ if error == "\n":
     sleep(0.94)
 
     # print total calculation time
-    print_letter_by_letter("Total calculation time: " + str(end_time - start_time) + " seconds\n")
+    print_stream = stdout
+    print_letter_by_letter("\nTotal calculation time: " + str(end_time - start_time) + " seconds\n\n")
 
 # if an error occured, print error
 else:
-    print_letter_by_letter(error + "\n")
+    print_stream = stdout
+    print_letter_by_letter(error + "\n\n")
 
-# close file if it was created and reset print stream
+# close file if it was created, reset print stream and print file path (if applicable)
 try:
-    if storage_choice == "b":
-        output_file.close()
-        print_stream = stdout
+    output_file.close()
+    print_stream = stdout
+    from os.path import abspath
+    print_letter_by_letter("Pi file located at: " + abspath(output_file_path) + "\n\n")
 except NameError:
     pass
 
 # pause so the program doesn't immediately terminate
-print_letter_by_letter("\nPress Enter to exit..", False)
+print_letter_by_letter("Press Enter to exit..", False)
 input(".")
